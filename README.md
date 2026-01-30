@@ -193,6 +193,40 @@ Example: git block version
 
 ![svg](https://raw.githubusercontent.com/yoshi389111/github-profile-3d-contrib/main/docs/demo/profile-gitblock.svg)
 
+### Theme previews (custom)
+
+These previews are generated using custom settings JSON.
+
+**Nord**
+<p>
+  <img src="https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/nord-light.svg" width="49%" />
+  <img src="https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/nord-dark.svg" width="49%" />
+</p>
+
+**Solarized**
+<p>
+  <img src="https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/solarized-light.svg" width="49%" />
+  <img src="https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/solarized-dark.svg" width="49%" />
+</p>
+
+**Gruvbox**
+<p>
+  <img src="https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/gruvbox-light.svg" width="49%" />
+  <img src="https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/gruvbox-dark.svg" width="49%" />
+</p>
+
+**Rose Pine**
+<p>
+  <img src="https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/rose-pine-light.svg" width="49%" />
+  <img src="https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/rose-pine-dark.svg" width="49%" />
+</p>
+
+**Graphite**
+<p>
+  <img src="https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/graphite-light.svg" width="49%" />
+  <img src="https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/graphite-dark.svg" width="49%" />
+</p>
+
 ### Step 4. Add image to README.md
 
 Add the path to the generated image in your README file.
