@@ -1,6 +1,9 @@
 # GitHub Profile 3D Contrib
 
-![svg](https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/profile-gitblock.svg)
+<p>
+  <img src="https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/nord-light.svg" width="49%" />
+  <img src="https://raw.githubusercontent.com/xarthurx/github-profile-3d-contrib/main/docs/demo/nord-dark.svg" width="49%" />
+</p>
 
 ## Overview
 
@@ -126,7 +129,7 @@ The first time, run this workflow manually.
 
 - `Actions` -> `GitHub-Profile-3D-Contrib` -> `Run workflow`
 
-The profile images are generated at the following paths:
+By default (without `SETTING_JSON`), the following profile images are generated:
 
 - `profile-3d-contrib/profile-green-animate.svg`
 - `profile-3d-contrib/profile-green.svg`
@@ -139,9 +142,18 @@ The profile images are generated at the following paths:
 - `profile-3d-contrib/profile-night-rainbow.svg`
 - `profile-3d-contrib/profile-gitblock.svg`
 
-If you specify the `SETTING_JSON` environment variable without a `fileName` property in the json file, the following image will be generated:
+When using `SETTING_JSON` with the custom themes (see below), the output files are named according to the `fileName` property in your JSON config. For example, with `sample-settings/theme-preview.json`:
 
-- `profile-3d-contrib/profile-customize.svg`
+- `profile-3d-contrib/nord-light.svg`
+- `profile-3d-contrib/nord-dark.svg`
+- `profile-3d-contrib/solarized-light.svg`
+- `profile-3d-contrib/solarized-dark.svg`
+- `profile-3d-contrib/gruvbox-light.svg`
+- `profile-3d-contrib/gruvbox-dark.svg`
+- `profile-3d-contrib/rose-pine-light.svg`
+- `profile-3d-contrib/rose-pine-dark.svg`
+- `profile-3d-contrib/graphite-light.svg`
+- `profile-3d-contrib/graphite-dark.svg`
 
 ### Theme previews (custom)
 
@@ -185,7 +197,7 @@ Add the path to the generated image in your README file.
 Example:
 
 ```md
-![](./profile-3d-contrib/profile-green-animate.svg)
+![](./profile-3d-contrib/nord-light.svg)
 ```
 
 ## How to use (GitHub Actions) - Advanced examples
