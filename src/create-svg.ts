@@ -123,8 +123,9 @@ export const createSvg = (
 
         const group = svg.append('g');
 
-        const positionXContrib = (width * 3) / 10;
-        const positionYContrib = height - 20;
+        // Stats bar: left-aligned below pie chart
+        const positionXContrib = 50;
+        const positionYContrib = height - 40;
 
         group
             .append('text')
@@ -132,7 +133,7 @@ export const createSvg = (
             .style('font-weight', 'bold')
             .attr('x', positionXContrib)
             .attr('y', positionYContrib)
-            .attr('text-anchor', 'end')
+            .attr('text-anchor', 'start')
             .text(util.inertThousandSeparator(userInfo.totalContributions))
             .attr('class', 'fill-strong');
 
@@ -142,14 +143,13 @@ export const createSvg = (
         group
             .append('text')
             .style('font-size', '24px')
-            .attr('x', positionXContrib + 10)
+            .attr('x', positionXContrib + 80)
             .attr('y', positionYContrib)
-            .attr('text-anchor', 'start')
             .attr('text-anchor', 'start')
             .text(contribLabel)
             .attr('class', 'fill-fg');
 
-        const positionXStar = (width * 5) / 10;
+        const positionXStar = 330;
         const positionYStar = positionYContrib;
 
         // icon of star
@@ -181,7 +181,7 @@ export const createSvg = (
             .append('title')
             .text(userInfo.totalStargazerCount);
 
-        const positionXFork = (width * 6) / 10;
+        const positionXFork = 470;
         const positionYFork = positionYContrib;
 
         // icon of fork

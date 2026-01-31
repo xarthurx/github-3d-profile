@@ -235,6 +235,26 @@ export const create3DContrib = (
                 )
                 .attr('dur', '3s')
                 .attr('repeatCount', '1');
+
+            // Wave effect: subtle vertical oscillation after grow completes
+            const waveAmp = Math.min(calHeight * 0.08, 4);
+            const wavePhase = (week + dayOfWeek) % 16;
+            const waveDur = 4; // seconds for one full wave cycle
+            const steps = 16;
+            const waveValues = Array.from({ length: steps + 1 }, (_, i) => {
+                const t = i / steps;
+                const phaseOffset = (wavePhase / 16) * 2 * Math.PI;
+                const offset = waveAmp * Math.sin(2 * Math.PI * t + phaseOffset);
+                return `${util.toFixed(baseX)} ${util.toFixed(baseY - calHeight + offset)}`;
+            }).join(';');
+
+            bar.append('animateTransform')
+                .attr('attributeName', 'transform')
+                .attr('type', 'translate')
+                .attr('values', waveValues)
+                .attr('dur', `${waveDur}s`)
+                .attr('begin', '3s')
+                .attr('repeatCount', 'indefinite');
         }
 
         const widthTop =

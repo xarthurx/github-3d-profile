@@ -57,6 +57,9 @@ export interface PieLangSettings {
     growingAnimation?: boolean;
 
     fileName?: string;
+
+    /** Optional colors for pie chart language slices (up to 6: 5 languages + "other"). If omitted, GitHub's default language colors are used. */
+    pieColors?: string[];
 }
 
 export interface BaseSettings extends RadarContribSettings, PieLangSettings {

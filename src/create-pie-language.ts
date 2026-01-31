@@ -31,6 +31,15 @@ export const createPieLanguage = (
         });
     }
 
+    // Override language colors with theme pieColors if provided
+    if (settings.pieColors && settings.pieColors.length > 0) {
+        languages.forEach((lang, i) => {
+            if (i < settings.pieColors!.length) {
+                lang.color = settings.pieColors![i];
+            }
+        });
+    }
+
     const isAnimate = settings.growingAnimation || isForcedAnimation;
     const animeSteps = 5;
     const animateOpacity = (num: number) =>
@@ -107,9 +116,32 @@ export const createPieLanguage = (
         .innerRadius(radius / 2);
 
     // pie chart
-    const paths = group
+    const pieGroup = group
         .append('g')
-        .attr('transform', `translate(${radius}, ${radius})`)
+        .attr('transform', `translate(${radius}, ${radius})`);
+
+    // Breathing effect: subtle scale pulse after intro animation
+    if (isAnimate) {
+        pieGroup
+            .append('animateTransform')
+            .attr('attributeName', 'transform')
+            .attr('type', 'translate')
+            .attr('values', `${radius} ${radius}`)
+            .attr('dur', '0.1s')
+            .attr('repeatCount', '1')
+            .attr('fill', 'freeze');
+        pieGroup
+            .append('animateTransform')
+            .attr('attributeName', 'transform')
+            .attr('type', 'scale')
+            .attr('values', '1;1.03;1;0.97;1')
+            .attr('dur', '5s')
+            .attr('begin', '3s')
+            .attr('repeatCount', 'indefinite')
+            .attr('additive', 'sum');
+    }
+
+    const paths = pieGroup
         .selectAll(null)
         .data(pieData)
         .enter()
