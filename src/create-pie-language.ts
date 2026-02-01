@@ -110,17 +110,69 @@ export const createPieLanguage = (
             .attr('repeatCount', '1');
     }
 
+    const outerRadius = radius - margin;
+    const innerRadius = radius / 2;
+
     const arc = d3
         .arc<d3.PieArcDatum<type.LangInfo>>()
-        .outerRadius(radius - margin)
-        .innerRadius(radius / 2);
+        .outerRadius(outerRadius)
+        .innerRadius(innerRadius);
+
+    // Breathing parameters (all effects synchronized)
+    const breathDur = 6; // seconds per cycle
+    const breathSteps = 40; // keyframes for smooth motion
+    const breathBegin = '3s'; // start after intro
 
     // pie chart
     const pieGroup = group
         .append('g')
         .attr('transform', `translate(${radius}, ${radius})`);
 
-    // Subtle scale breathing on the whole pie group
+    // Glow pulse filter: animated Gaussian blur shadow
+    if (isAnimate) {
+        const defs = svg.append('defs');
+        const filter = defs
+            .append('filter')
+            .attr('id', 'pie-glow')
+            .attr('x', '-50%')
+            .attr('y', '-50%')
+            .attr('width', '200%')
+            .attr('height', '200%');
+
+        const blur = filter
+            .append('feGaussianBlur')
+            .attr('in', 'SourceAlpha')
+            .attr('stdDeviation', '0')
+            .attr('result', 'blur');
+
+        // Animate blur radius: 0 → 5 → 0
+        blur.append('animate')
+            .attr('attributeName', 'stdDeviation')
+            .attr('values', Array.from(
+                { length: breathSteps + 1 },
+                (_, step) => {
+                    const t = step / breathSteps;
+                    return (2.5 + 2.5 * Math.sin(2 * Math.PI * t)).toFixed(2);
+                },
+            ).join(';'))
+            .attr('dur', `${breathDur}s`)
+            .attr('begin', breathBegin)
+            .attr('repeatCount', 'indefinite');
+
+        filter
+            .append('feOffset')
+            .attr('dx', '0')
+            .attr('dy', '0')
+            .attr('result', 'offsetBlur');
+
+        const merge = filter.append('feMerge');
+        merge.append('feMergeNode').attr('in', 'offsetBlur');
+        merge.append('feMergeNode').attr('in', 'SourceGraphic');
+
+        pieGroup.attr('filter', 'url(#pie-glow)');
+    }
+
+    // Scale breathing on the whole pie group (±1%, synced to 6s)
     if (isAnimate) {
         pieGroup
             .append('animateTransform')
@@ -134,37 +186,47 @@ export const createPieLanguage = (
             .append('animateTransform')
             .attr('attributeName', 'transform')
             .attr('type', 'scale')
-            .attr('values', '1;1.015;1;0.985;1')
-            .attr('dur', '5s')
-            .attr('begin', '3s')
+            .attr('values', '1;1.01;1;0.99;1')
+            .attr('dur', `${breathDur}s`)
+            .attr('begin', breathBegin)
             .attr('repeatCount', 'indefinite')
             .attr('additive', 'sum');
     }
 
-    // Per-slice circular breathing: opacity sweeps around the pie
-    const breathCycleDur = 4; // seconds for full cycle
-    const breathMin = 0.5;
-    const breathMax = 1.0;
-    const breathSteps = 20;
-    const circularBreathValues = (sliceIndex: number, total: number) => {
-        const phase = sliceIndex / total;
-        return Array.from({ length: breathSteps + 1 }, (_, step) => {
+    // Unified opacity breathing values (all slices together, ease-in-out)
+    const breathOpacityValues = Array.from(
+        { length: breathSteps + 1 },
+        (_, step) => {
             const t = step / breathSteps;
-            // Sine wave with phase offset per slice
-            const v = breathMin + (breathMax - breathMin) *
-                (0.5 + 0.5 * Math.sin(2 * Math.PI * (t - phase)));
+            // Cosine ease-in-out: 0.85 → 1.0 → 0.85
+            const v = 0.85 + 0.15 * (0.5 + 0.5 * Math.sin(2 * Math.PI * t));
             return v.toFixed(3);
-        }).join(';');
+        },
+    ).join(';');
+
+    // Radial breathing: generate arc paths with varying outer radius
+    const radiusVariation = 6; // pixels of expansion
+    const breathArcPaths = (d: d3.PieArcDatum<type.LangInfo>) => {
+        const arcGen = d3
+            .arc<d3.PieArcDatum<type.LangInfo>>()
+            .innerRadius(innerRadius);
+        return Array.from(
+            { length: breathSteps + 1 },
+            (_, step) => {
+                const t = step / breathSteps;
+                const r =
+                    outerRadius +
+                    radiusVariation * Math.sin(2 * Math.PI * t);
+                arcGen.outerRadius(r);
+                return arcGen(d);
+            },
+        ).join(';');
     };
 
-    // Wrap each slice in a <g> so we can attach multiple animations
-    const sliceGroups = pieGroup
+    const paths = pieGroup
         .selectAll(null)
         .data(pieData)
         .enter()
-        .append('g');
-
-    const paths = sliceGroups
         .append('path')
         .attr('d', arc)
         .style('fill', (d) => d.data.color)
@@ -173,23 +235,34 @@ export const createPieLanguage = (
     paths
         .append('title')
         .text((d) => `${d.data.language} ${d.data.contributions}`);
+
     if (isAnimate) {
-        // Intro: sequential fade-in (0→1 over 3s) on the path
+        // Intro: sequential fade-in (0→1 over 3s)
         paths
             .append('animate')
             .attr('attributeName', 'fill-opacity')
             .attr('values', (d, i) => animateOpacity(i))
             .attr('dur', '3s')
             .attr('repeatCount', '1');
-        // Continuous: circular breathing opacity on the wrapper <g>
-        sliceGroups
-            .append('animate')
-            .attr('attributeName', 'opacity')
-            .attr('values', (d, i) =>
-                circularBreathValues(i, languages.length),
-            )
-            .attr('dur', `${breathCycleDur}s`)
-            .attr('begin', '3s')
-            .attr('repeatCount', 'indefinite');
+
+        // Continuous: unified opacity breathing on each path
+        paths.each(function (d) {
+            const el = d3.select(this);
+
+            el.append('animate')
+                .attr('attributeName', 'fill-opacity')
+                .attr('values', breathOpacityValues)
+                .attr('dur', `${breathDur}s`)
+                .attr('begin', breathBegin)
+                .attr('repeatCount', 'indefinite');
+
+            // Radial breathing: animate the d attribute with varying outer radius
+            el.append('animate')
+                .attr('attributeName', 'd')
+                .attr('values', breathArcPaths(d))
+                .attr('dur', `${breathDur}s`)
+                .attr('begin', breathBegin)
+                .attr('repeatCount', 'indefinite');
+        });
     }
 };
