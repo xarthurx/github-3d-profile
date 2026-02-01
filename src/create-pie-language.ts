@@ -1,8 +1,28 @@
 import * as d3 from 'd3';
 import * as type from './type';
+import { OTHER_COLOR } from './utils';
 
 const OTHER_NAME = 'other';
-const OTHER_COLOR = '#444444';
+
+/** Intro animation */
+const INTRO_DURATION = '3s';
+const INTRO_FADE_STEPS = 5;
+
+/** Pie chart label layout */
+const LABEL_ROW_COUNT = 8;
+
+/** Breathing animation (continuous, after intro) */
+const BREATH_DURATION_SECONDS = 6;
+const BREATH_KEYFRAMES = 40;
+const BREATH_BEGIN = INTRO_DURATION;
+const BREATH_RADIUS_VARIATION = 6;
+const BREATH_OPACITY_MIN = 0.85;
+const BREATH_OPACITY_RANGE = 0.15;
+const BREATH_SCALE_RANGE = 0.01;
+
+/** Glow filter blur range */
+const GLOW_BLUR_MIN = 2.5;
+const GLOW_BLUR_RANGE = 2.5;
 
 export const createPieLanguage = (
     svg: d3.Selection<SVGSVGElement, unknown, null, unknown>,
@@ -41,17 +61,16 @@ export const createPieLanguage = (
     }
 
     const isAnimate = settings.growingAnimation || isForcedAnimation;
-    const animeSteps = 5;
     const animateOpacity = (num: number) =>
-        Array<string>(languages.length + animeSteps)
+        Array<string>(languages.length + INTRO_FADE_STEPS)
             .fill('')
-            .map((d, i) => (i < num ? 0 : Math.min((i - num) / animeSteps, 1)))
+            .map((d, i) => (i < num ? 0 : Math.min((i - num) / INTRO_FADE_STEPS, 1)))
             .join(';');
 
     const radius = height / 2;
     const margin = radius / 10;
 
-    const row = 8;
+    const row = LABEL_ROW_COUNT;
     const offset = (row - languages.length) / 2 + 0.5;
     const fontSize = height / row / 1.5;
 
@@ -85,7 +104,7 @@ export const createPieLanguage = (
             .append('animate')
             .attr('attributeName', 'fill-opacity')
             .attr('values', (d, i) => animateOpacity(i))
-            .attr('dur', '3s')
+            .attr('dur', INTRO_DURATION)
             .attr('repeatCount', '1');
     }
 
@@ -106,7 +125,7 @@ export const createPieLanguage = (
             .append('animate')
             .attr('attributeName', 'fill-opacity')
             .attr('values', (d, i) => animateOpacity(i))
-            .attr('dur', '3s')
+            .attr('dur', INTRO_DURATION)
             .attr('repeatCount', '1');
     }
 
@@ -119,9 +138,9 @@ export const createPieLanguage = (
         .innerRadius(innerRadius);
 
     // Breathing parameters (all effects synchronized)
-    const breathDur = 6; // seconds per cycle
-    const breathSteps = 40; // keyframes for smooth motion
-    const breathBegin = '3s'; // start after intro
+    const breathDur = BREATH_DURATION_SECONDS;
+    const breathSteps = BREATH_KEYFRAMES;
+    const breathBegin = BREATH_BEGIN;
 
     // pie chart
     const pieGroup = group
@@ -145,14 +164,14 @@ export const createPieLanguage = (
             .attr('stdDeviation', '0')
             .attr('result', 'blur');
 
-        // Animate blur radius: 0 → 5 → 0
+        // Animate blur radius: 0 → peak → 0
         blur.append('animate')
             .attr('attributeName', 'stdDeviation')
             .attr('values', Array.from(
                 { length: breathSteps + 1 },
                 (_, step) => {
                     const t = step / breathSteps;
-                    return (2.5 + 2.5 * Math.sin(2 * Math.PI * t)).toFixed(2);
+                    return (GLOW_BLUR_MIN + GLOW_BLUR_RANGE * Math.sin(2 * Math.PI * t)).toFixed(2);
                 },
             ).join(';'))
             .attr('dur', `${breathDur}s`)
@@ -186,7 +205,7 @@ export const createPieLanguage = (
             .append('animateTransform')
             .attr('attributeName', 'transform')
             .attr('type', 'scale')
-            .attr('values', '1;1.01;1;0.99;1')
+            .attr('values', `1;${1 + BREATH_SCALE_RANGE};1;${1 - BREATH_SCALE_RANGE};1`)
             .attr('dur', `${breathDur}s`)
             .attr('begin', breathBegin)
             .attr('repeatCount', 'indefinite')
@@ -198,14 +217,13 @@ export const createPieLanguage = (
         { length: breathSteps + 1 },
         (_, step) => {
             const t = step / breathSteps;
-            // Cosine ease-in-out: 0.85 → 1.0 → 0.85
-            const v = 0.85 + 0.15 * (0.5 + 0.5 * Math.sin(2 * Math.PI * t));
+            const v = BREATH_OPACITY_MIN + BREATH_OPACITY_RANGE * (0.5 + 0.5 * Math.sin(2 * Math.PI * t));
             return v.toFixed(3);
         },
     ).join(';');
 
     // Radial breathing: generate arc paths with varying outer radius
-    const radiusVariation = 6; // pixels of expansion
+    const radiusVariation = BREATH_RADIUS_VARIATION;
     const breathArcPaths = (d: d3.PieArcDatum<type.LangInfo>) => {
         const arcGen = d3
             .arc<d3.PieArcDatum<type.LangInfo>>()
@@ -237,12 +255,12 @@ export const createPieLanguage = (
         .text((d) => `${d.data.language} ${d.data.contributions}`);
 
     if (isAnimate) {
-        // Intro: sequential fade-in (0→1 over 3s)
+        // Intro: sequential fade-in
         paths
             .append('animate')
             .attr('attributeName', 'fill-opacity')
             .attr('values', (d, i) => animateOpacity(i))
-            .attr('dur', '3s')
+            .attr('dur', INTRO_DURATION)
             .attr('repeatCount', '1');
 
         // Continuous: unified opacity breathing on each path

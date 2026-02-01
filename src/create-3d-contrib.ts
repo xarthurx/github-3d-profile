@@ -7,6 +7,24 @@ const DARKER_RIGHT = 1;
 const DARKER_LEFT = 0.5;
 const DARKER_TOP = 0;
 
+/** Intro grow animation duration */
+const GROW_DURATION = '3s';
+
+/** Wave animation parameters (continuous, after grow) */
+const WAVE_AMP_RATIO = 0.08;
+const WAVE_AMP_MAX = 4;
+const WAVE_PHASE_MOD = 16;
+const WAVE_CYCLE_SECONDS = 4;
+const WAVE_STEPS = 16;
+
+/** Height formula constants: log10(count / DIVISOR + 1) * SCALE + BASE */
+const HEIGHT_DIVISOR = 20;
+const HEIGHT_SCALE = 144;
+const HEIGHT_BASE = 3;
+
+/** Number of horizontal slots (weeks display width) */
+const WEEK_SLOTS = 64;
+
 const toEpochDays = (date: Date): number =>
     Math.floor(date.getTime() / (24 * 60 * 60 * 1000));
 
@@ -112,6 +130,33 @@ const addBitmapPattern = (
     path.attr('fill', `url(#pattern_${contributionLevel}_${panel})`);
 };
 
+/** Map from panel type to its darker factor */
+const DARKER_BY_PANEL: Record<PanelType, number> = {
+    top: DARKER_TOP,
+    left: DARKER_LEFT,
+    right: DARKER_RIGHT,
+};
+
+/** Apply the correct color/pattern to a panel based on settings type */
+const applyPanelColor = (
+    path: d3.Selection<SVGRectElement, unknown, null, unknown>,
+    contribLevel: number,
+    panel: PanelType,
+    settings: type.FullSettings,
+    date: Date,
+    week: number,
+): void => {
+    if (settings.type === 'normal') {
+        addNormalColor(path, contribLevel, panel);
+    } else if (settings.type === 'season') {
+        addSeasonColor(path, contribLevel, panel, date);
+    } else if (settings.type === 'rainbow') {
+        addRainbowColor(path, contribLevel, settings, DARKER_BY_PANEL[panel], week);
+    } else if (settings.type === 'bitmap') {
+        addBitmapPattern(path, contribLevel, panel);
+    }
+};
+
 const atan = (value: number) => (Math.atan(value) * 360) / 2 / Math.PI;
 
 const addPatternForBitmap = (
@@ -189,7 +234,7 @@ export const create3DContrib = (
     const weekcount = Math.ceil(
         (userInfo.contributionCalendar.length + firstDate.getUTCDay()) / 7.0,
     );
-    const dx = width / 64;
+    const dx = width / WEEK_SLOTS;
     const dy = dx * Math.tan(ANGLE * ((2 * Math.PI) / 360));
     const dxx = dx * 0.9;
     const dyy = dy * 0.9;
@@ -207,8 +252,7 @@ export const create3DContrib = (
 
         const baseX = offsetX + (week - dayOfWeek) * dx;
         const baseY = offsetY + (week + dayOfWeek) * dy;
-        // ref. https://github.com/yoshi389111/github-profile-3d-contrib/issues/27
-        const calHeight = Math.log10(cal.contributionCount / 20 + 1) * 144 + 3;
+        const calHeight = Math.log10(cal.contributionCount / HEIGHT_DIVISOR + 1) * HEIGHT_SCALE + HEIGHT_BASE;
         const contribLevel = cal.contributionLevel;
 
         const isAnimate = settings.growingAnimation || isForcedAnimation;
@@ -228,22 +272,20 @@ export const create3DContrib = (
                 .attr(
                     'values',
                     `${util.toFixed(baseX)} ${util.toFixed(
-                        baseY - 3,
+                        baseY - HEIGHT_BASE,
                     )};${util.toFixed(baseX)} ${util.toFixed(
                         baseY - calHeight,
                     )}`,
                 )
-                .attr('dur', '3s')
+                .attr('dur', GROW_DURATION)
                 .attr('repeatCount', '1');
 
             // Wave effect: subtle vertical oscillation after grow completes
-            const waveAmp = Math.min(calHeight * 0.08, 4);
-            const wavePhase = (week + dayOfWeek) % 16;
-            const waveDur = 4; // seconds for one full wave cycle
-            const steps = 16;
-            const waveValues = Array.from({ length: steps + 1 }, (_, i) => {
-                const t = i / steps;
-                const phaseOffset = (wavePhase / 16) * 2 * Math.PI;
+            const waveAmp = Math.min(calHeight * WAVE_AMP_RATIO, WAVE_AMP_MAX);
+            const wavePhase = (week + dayOfWeek) % WAVE_PHASE_MOD;
+            const waveValues = Array.from({ length: WAVE_STEPS + 1 }, (_, i) => {
+                const t = i / WAVE_STEPS;
+                const phaseOffset = (wavePhase / WAVE_PHASE_MOD) * 2 * Math.PI;
                 const offset = waveAmp * Math.sin(2 * Math.PI * t + phaseOffset);
                 return `${util.toFixed(baseX)} ${util.toFixed(baseY - calHeight + offset)}`;
             }).join(';');
@@ -252,8 +294,8 @@ export const create3DContrib = (
                 .attr('attributeName', 'transform')
                 .attr('type', 'translate')
                 .attr('values', waveValues)
-                .attr('dur', `${waveDur}s`)
-                .attr('begin', '3s')
+                .attr('dur', `${WAVE_CYCLE_SECONDS}s`)
+                .attr('begin', GROW_DURATION)
                 .attr('repeatCount', 'indefinite');
         }
 
@@ -277,15 +319,7 @@ export const create3DContrib = (
                 )})`,
             );
 
-        if (settings.type === 'normal') {
-            addNormalColor(topPanel, contribLevel, 'top');
-        } else if (settings.type === 'season') {
-            addSeasonColor(topPanel, contribLevel, 'top', cal.date);
-        } else if (settings.type === 'rainbow') {
-            addRainbowColor(topPanel, contribLevel, settings, DARKER_TOP, week);
-        } else if (settings.type === 'bitmap') {
-            addBitmapPattern(topPanel, contribLevel, 'top');
-        }
+        applyPanelColor(topPanel, contribLevel, 'top', settings, cal.date, week);
 
         const widthLeft =
             settings.type === 'bitmap'
@@ -307,30 +341,16 @@ export const create3DContrib = (
                 )} ${util.toFixed(scaleLeft)})`,
             );
 
-        if (settings.type === 'normal') {
-            addNormalColor(leftPanel, contribLevel, 'left');
-        } else if (settings.type === 'season') {
-            addSeasonColor(leftPanel, contribLevel, 'left', cal.date);
-        } else if (settings.type === 'rainbow') {
-            addRainbowColor(
-                leftPanel,
-                contribLevel,
-                settings,
-                DARKER_LEFT,
-                week,
-            );
-        } else if (settings.type === 'bitmap') {
-            addBitmapPattern(leftPanel, contribLevel, 'left');
-        }
+        applyPanelColor(leftPanel, contribLevel, 'left', settings, cal.date, week);
         if (isAnimate && contribLevel !== 0) {
             leftPanel
                 .append('animate')
                 .attr('attributeName', 'height')
                 .attr(
                     'values',
-                    `${util.toFixed(3 / scaleLeft)};${util.toFixed(heightLeft)}`,
+                    `${util.toFixed(HEIGHT_BASE / scaleLeft)};${util.toFixed(heightLeft)}`,
                 )
-                .attr('dur', '3s')
+                .attr('dur', GROW_DURATION)
                 .attr('repeatCount', '1');
         }
 
@@ -359,32 +379,18 @@ export const create3DContrib = (
                 )} ${util.toFixed(scaleRight)})`,
             );
 
-        if (settings.type === 'normal') {
-            addNormalColor(rightPanel, contribLevel, 'right');
-        } else if (settings.type === 'season') {
-            addSeasonColor(rightPanel, contribLevel, 'right', cal.date);
-        } else if (settings.type === 'rainbow') {
-            addRainbowColor(
-                rightPanel,
-                contribLevel,
-                settings,
-                DARKER_RIGHT,
-                week,
-            );
-        } else if (settings.type === 'bitmap') {
-            addBitmapPattern(rightPanel, contribLevel, 'right');
-        }
+        applyPanelColor(rightPanel, contribLevel, 'right', settings, cal.date, week);
         if (isAnimate && contribLevel !== 0) {
             rightPanel
                 .append('animate')
                 .attr('attributeName', 'height')
                 .attr(
                     'values',
-                    `${util.toFixed(3 / scaleRight)};${util.toFixed(
+                    `${util.toFixed(HEIGHT_BASE / scaleRight)};${util.toFixed(
                         heightRight,
                     )}`,
                 )
-                .attr('dur', '3s')
+                .attr('dur', GROW_DURATION)
                 .attr('repeatCount', '1');
         }
     });

@@ -7,29 +7,47 @@ import * as colors from './create-css-colors';
 import * as util from './utils';
 import * as type from './type';
 
-const width = 1280;
-const height = 850;
+/** Full SVG canvas dimensions */
+const SVG_WIDTH = 1280;
+const SVG_HEIGHT = 850;
 
-const pieHeight = 200 * 1.3;
-const pieWidth = pieHeight * 2;
+/** Pie chart sizing */
+const PIE_HEIGHT = 200 * 1.3;
+const PIE_WIDTH = PIE_HEIGHT * 2;
 
-const radarWidth = 400 * 1.3;
-const radarHeight = (radarWidth * 3) / 4;
-const radarX = width - radarWidth - 40;
+/** Radar chart sizing and position */
+const RADAR_WIDTH = 400 * 1.3;
+const RADAR_HEIGHT = (RADAR_WIDTH * 3) / 4;
+const RADAR_X = SVG_WIDTH - RADAR_WIDTH - 40;
+
+/** Padding around card backgrounds */
+const CARD_PADDING = 12;
+const CARD_RADIUS = 12;
+const CARD_OPACITY = '0.3';
+
+/** Stats bar layout */
+const STATS_X = 50;
+const STATS_FONT_SIZE_VALUE = '22px';
+const STATS_FONT_SIZE_LABEL = '16px';
+const STATS_STAR_X = 280;
+const STATS_FORK_X = 390;
+
+/** Radar chart Y offset from top */
+const RADAR_Y = 70;
 
 export const createSvg = (
     userInfo: type.UserInfo,
     settings: type.Settings,
     isForcedAnimation: boolean,
 ): string => {
-    let svgWidth = width;
-    let svgHeight = height;
+    let svgWidth = SVG_WIDTH;
+    let svgHeight = SVG_HEIGHT;
     if (settings.type === 'pie_lang_only') {
-        svgWidth = pieWidth;
-        svgHeight = pieHeight;
+        svgWidth = PIE_WIDTH;
+        svgHeight = PIE_HEIGHT;
     } else if (settings.type === 'radar_contrib_only') {
-        svgWidth = radarWidth;
-        svgHeight = radarHeight;
+        svgWidth = RADAR_WIDTH;
+        svgHeight = RADAR_HEIGHT;
     }
 
     const fakeDom = new JSDOM(
@@ -88,8 +106,8 @@ export const createSvg = (
             userInfo,
             0,
             0,
-            pieWidth,
-            pieHeight,
+            PIE_WIDTH,
+            PIE_HEIGHT,
             settings,
             isForcedAnimation,
         );
@@ -100,8 +118,8 @@ export const createSvg = (
             userInfo,
             0,
             0,
-            radarWidth,
-            radarHeight,
+            RADAR_WIDTH,
+            RADAR_HEIGHT,
             settings,
             isForcedAnimation,
         );
@@ -112,48 +130,48 @@ export const createSvg = (
             userInfo,
             0,
             0,
-            width,
-            height,
+            SVG_WIDTH,
+            SVG_HEIGHT,
             settings,
             isForcedAnimation,
         );
 
         // card background behind radar chart
         svg.append('rect')
-            .attr('x', radarX - 12)
-            .attr('y', 70 - 12)
-            .attr('width', radarWidth + 24)
-            .attr('height', radarHeight + 24)
-            .attr('rx', 12)
-            .attr('ry', 12)
+            .attr('x', RADAR_X - CARD_PADDING)
+            .attr('y', RADAR_Y - CARD_PADDING)
+            .attr('width', RADAR_WIDTH + CARD_PADDING * 2)
+            .attr('height', RADAR_HEIGHT + CARD_PADDING * 2)
+            .attr('rx', CARD_RADIUS)
+            .attr('ry', CARD_RADIUS)
             .attr('class', 'fill-bg')
-            .style('opacity', '0.3');
+            .style('opacity', CARD_OPACITY);
 
         // radar chart
         radar.createRadarContrib(
             svg,
             userInfo,
-            radarX,
-            70,
-            radarWidth,
-            radarHeight,
+            RADAR_X,
+            RADAR_Y,
+            RADAR_WIDTH,
+            RADAR_HEIGHT,
             settings,
             isForcedAnimation,
         );
 
-        const pieX = 50;
-        const pieY = height - pieHeight - 60;
+        const pieX = STATS_X;
+        const pieY = SVG_HEIGHT - PIE_HEIGHT - 60;
 
         // card background behind pie chart
         svg.append('rect')
-            .attr('x', pieX - 12)
-            .attr('y', pieY - 12)
-            .attr('width', pieWidth + 24)
-            .attr('height', pieHeight + 24)
-            .attr('rx', 12)
-            .attr('ry', 12)
+            .attr('x', pieX - CARD_PADDING)
+            .attr('y', pieY - CARD_PADDING)
+            .attr('width', PIE_WIDTH + CARD_PADDING * 2)
+            .attr('height', PIE_HEIGHT + CARD_PADDING * 2)
+            .attr('rx', CARD_RADIUS)
+            .attr('ry', CARD_RADIUS)
             .attr('class', 'fill-bg')
-            .style('opacity', '0.3');
+            .style('opacity', CARD_OPACITY);
 
         // pie chart
         pie.createPieLanguage(
@@ -161,8 +179,8 @@ export const createSvg = (
             userInfo,
             pieX,
             pieY,
-            pieWidth,
-            pieHeight,
+            PIE_WIDTH,
+            PIE_HEIGHT,
             settings,
             isForcedAnimation,
         );
@@ -170,14 +188,13 @@ export const createSvg = (
         const group = svg.append('g');
 
         // Stats bar: left-aligned below pie chart (compact, evenly spaced)
-        const positionXContrib = 50;
-        const positionYContrib = height - 30;
+        const positionYContrib = SVG_HEIGHT - 30;
 
         group
             .append('text')
-            .style('font-size', '22px')
+            .style('font-size', STATS_FONT_SIZE_VALUE)
             .style('font-weight', '600')
-            .attr('x', positionXContrib)
+            .attr('x', STATS_X)
             .attr('y', positionYContrib)
             .attr('text-anchor', 'start')
             .text(util.inertThousandSeparator(userInfo.totalContributions))
@@ -188,23 +205,20 @@ export const createSvg = (
             : 'contributions';
         group
             .append('text')
-            .style('font-size', '16px')
-            .attr('x', positionXContrib + 60)
+            .style('font-size', STATS_FONT_SIZE_LABEL)
+            .attr('x', STATS_X + 60)
             .attr('y', positionYContrib)
             .attr('text-anchor', 'start')
             .text(contribLabel)
             .attr('class', 'fill-fg');
-
-        const positionXStar = 280;
-        const positionYStar = positionYContrib;
 
         // icon of star
         group
             .append('g')
             .attr(
                 'transform',
-                `translate(${positionXStar - 24}, ${
-                    positionYStar - 21
+                `translate(${STATS_STAR_X - 24}, ${
+                    positionYContrib - 21
                 }), scale(1.5)`,
             )
             .style('opacity', '0.9')
@@ -218,26 +232,23 @@ export const createSvg = (
 
         group
             .append('text')
-            .style('font-size', '22px')
+            .style('font-size', STATS_FONT_SIZE_VALUE)
             .style('font-weight', '600')
-            .attr('x', positionXStar + 6)
-            .attr('y', positionYStar)
+            .attr('x', STATS_STAR_X + 6)
+            .attr('y', positionYContrib)
             .attr('text-anchor', 'start')
             .text(util.toScale(userInfo.totalStargazerCount))
             .attr('class', 'fill-fg')
             .append('title')
             .text(userInfo.totalStargazerCount);
 
-        const positionXFork = 390;
-        const positionYFork = positionYContrib;
-
         // icon of fork
         group
             .append('g')
             .attr(
                 'transform',
-                `translate(${positionXFork - 24}, ${
-                    positionYFork - 21
+                `translate(${STATS_FORK_X - 24}, ${
+                    positionYContrib - 21
                 }), scale(1.5)`,
             )
             .style('opacity', '0.9')
@@ -251,10 +262,10 @@ export const createSvg = (
 
         group
             .append('text')
-            .style('font-size', '22px')
+            .style('font-size', STATS_FONT_SIZE_VALUE)
             .style('font-weight', '600')
-            .attr('x', positionXFork + 4)
-            .attr('y', positionYFork)
+            .attr('x', STATS_FORK_X + 4)
+            .attr('y', positionYContrib)
             .attr('text-anchor', 'start')
             .text(util.toScale(userInfo.totalForkCount))
             .attr('class', 'fill-fg')
@@ -273,8 +284,8 @@ export const createSvg = (
 
         group
             .append('text')
-            .style('font-size', '16px')
-            .attr('x', width - 20)
+            .style('font-size', STATS_FONT_SIZE_LABEL)
+            .attr('x', SVG_WIDTH - 20)
             .attr('y', 20)
             .attr('dominant-baseline', 'hanging')
             .attr('text-anchor', 'end')

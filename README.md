@@ -7,6 +7,10 @@
 
 ## Overview
 
+> **Fork of [yoshi389111/github-profile-3d-contrib](https://github.com/yoshi389111/github-profile-3d-contrib)** (branched from v0.9.1).
+> This fork adds custom themes (Nord, Solarized, Gruvbox, Rose Pine, Graphite), wave animation on 3D blocks, pie chart breathing effects, themed pie colors, gradient backgrounds, and a redesigned stats bar.
+> See [CHANGE_LOG.md](./CHANGE_LOG.md) for the full list of changes.
+
 This GitHub Action creates a GitHub contribution calendar on a 3D profile image.
 
 ## How to use (GitHub Actions) - Basic
@@ -81,6 +85,7 @@ In the sample, only `GITHUB_TOKEN` and `USERNAME` are specified as environment v
 - `SETTING_JSON` : (optional) settings json file path. See `sample-settings/*.json` and `src/type.ts` in `xarthurx/github-profile-3d-contrib` repository for details. - since ver. 0.6.0
 - `GITHUB_ENDPOINT` : (optional) Github GraphQL endpoint. For example, if you want to create a contribution calendar based on your company's GitHub Enterprise activity instead of GitHub.com, set this environment variable. e.g. `https://github.mycompany.com/api/graphql` - since ver. 0.8.0
 - `YEAR` : (optional) For past calendars, specify the year. This is intended to be specified when running the tool from the command line. - since ver. 0.8.0
+- `OUTPUT_DIR` : (optional) Custom output directory, default `./profile-3d-contrib`
 
 #### About `GITHUB_TOKEN`
 
@@ -215,16 +220,17 @@ export GITHUB_TOKEN=XXXXXXXXXXXXXXXXXXXXX
 Run the following command, replacing `USER_NAME` with your GitHub username or the target username.
 
 ```sh
-node_modules/.bin/ts-node src/index.ts USER_NAME
+bunx ts-node src/index.ts USER_NAME
 ```
 
 or
 
 ```sh
-npm run build
+bun run build
 node . USER_NAME
 ```
 
 ## License
 
 &copy; 2021 SATO Yoshiyuki. Licensed under the MIT License.
+Fork maintained by [xarthurx](https://github.com/xarthurx).

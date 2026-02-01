@@ -1,7 +1,6 @@
 import * as client from './github-graphql';
 import * as type from './type';
-
-const OTHER_COLOR = '#444444';
+import { OTHER_COLOR } from './utils';
 
 const toNumberContributionLevel = (level: type.ContributionLevel): number => {
     switch (level) {

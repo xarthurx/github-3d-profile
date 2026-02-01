@@ -1,3 +1,6 @@
+/** Default color for languages without a defined color, and for the "other" category. */
+export const OTHER_COLOR = '#444444';
+
 export const toIsoDate = (date: Date): string =>
     date.toISOString().substring(0, 10);
 

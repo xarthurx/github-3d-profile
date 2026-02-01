@@ -16,15 +16,15 @@ const createColors = (settings: type.Settings): string => {
     );
 
     if (
-        settings.type == 'normal' ||
-        settings.type == 'season' ||
-        settings.type == 'rainbow' ||
-        settings.type == 'bitmap'
+        settings.type === 'normal' ||
+        settings.type === 'season' ||
+        settings.type === 'rainbow' ||
+        settings.type === 'bitmap'
     ) {
         cssColors.push(`.fill-strong { fill: ${settings.strongColor}; }`);
     }
 
-    if (settings.type != 'pie_lang_only') {
+    if (settings.type !== 'pie_lang_only') {
         cssColors.push(
             `.fill-weak { fill: ${settings.weakColor}; }`,
             `.stroke-weak { stroke: ${settings.weakColor}; }`,
@@ -39,7 +39,7 @@ const createColors = (settings: type.Settings): string => {
         );
     }
 
-    if (settings.type == 'normal') {
+    if (settings.type === 'normal') {
         settings.contribColors.forEach((color, i) => {
             const topColor = d3.rgb(color).darker(DARKER_TOP).toString();
             const leftColor = d3.rgb(color).darker(DARKER_LEFT).toString();
@@ -52,7 +52,7 @@ const createColors = (settings: type.Settings): string => {
         });
     }
 
-    if (settings.type == 'season') {
+    if (settings.type === 'season') {
         let n = 0;
         const interpolator1 = d3.interpolate(
             settings.contribColors1,
@@ -104,7 +104,7 @@ const createColors = (settings: type.Settings): string => {
         );
     }
 
-    if (settings.type == 'bitmap') {
+    if (settings.type === 'bitmap') {
         settings.contribPatterns.forEach((pattern, i) => {
             const topBack = pattern.top.backgroundColor;
             const topFore = pattern.top.foregroundColor;
