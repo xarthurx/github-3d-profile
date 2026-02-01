@@ -120,7 +120,7 @@ export const createPieLanguage = (
         .append('g')
         .attr('transform', `translate(${radius}, ${radius})`);
 
-    // Breathing effect: subtle scale pulse + opacity after intro animation
+    // Subtle scale breathing on the whole pie group
     if (isAnimate) {
         pieGroup
             .append('animateTransform')
@@ -139,33 +139,57 @@ export const createPieLanguage = (
             .attr('begin', '3s')
             .attr('repeatCount', 'indefinite')
             .attr('additive', 'sum');
-        pieGroup
-            .append('animate')
-            .attr('attributeName', 'opacity')
-            .attr('values', '1;0.85;1')
-            .attr('dur', '5s')
-            .attr('begin', '3s')
-            .attr('repeatCount', 'indefinite');
     }
 
-    const paths = pieGroup
+    // Per-slice circular breathing: opacity sweeps around the pie
+    const breathCycleDur = 4; // seconds for full cycle
+    const breathMin = 0.5;
+    const breathMax = 1.0;
+    const breathSteps = 20;
+    const circularBreathValues = (sliceIndex: number, total: number) => {
+        const phase = sliceIndex / total;
+        return Array.from({ length: breathSteps + 1 }, (_, step) => {
+            const t = step / breathSteps;
+            // Sine wave with phase offset per slice
+            const v = breathMin + (breathMax - breathMin) *
+                (0.5 + 0.5 * Math.sin(2 * Math.PI * (t - phase)));
+            return v.toFixed(3);
+        }).join(';');
+    };
+
+    // Wrap each slice in a <g> so we can attach multiple animations
+    const sliceGroups = pieGroup
         .selectAll(null)
         .data(pieData)
         .enter()
+        .append('g');
+
+    const paths = sliceGroups
         .append('path')
         .attr('d', arc)
-        .style('fill', (d) => d.data.color) // style -> attr ?
+        .style('fill', (d) => d.data.color)
         .attr('class', 'stroke-bg')
         .attr('stroke-width', '2px');
     paths
         .append('title')
         .text((d) => `${d.data.language} ${d.data.contributions}`);
     if (isAnimate) {
+        // Intro: sequential fade-in (0→1 over 3s) on the path
         paths
             .append('animate')
             .attr('attributeName', 'fill-opacity')
             .attr('values', (d, i) => animateOpacity(i))
             .attr('dur', '3s')
             .attr('repeatCount', '1');
+        // Continuous: circular breathing opacity on the wrapper <g>
+        sliceGroups
+            .append('animate')
+            .attr('attributeName', 'opacity')
+            .attr('values', (d, i) =>
+                circularBreathValues(i, languages.length),
+            )
+            .attr('dur', `${breathCycleDur}s`)
+            .attr('begin', '3s')
+            .attr('repeatCount', 'indefinite');
     }
 };
