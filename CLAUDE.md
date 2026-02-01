@@ -9,6 +9,7 @@ Source repo: `xarthurx/github-3d-profile`. Used by the profile repo `xarthurx/xa
 
 - Use **bun** (not npm): `bun install`, `bun run build`, `bun run test`
 - Build pipeline: `tsc` then `ncc` to bundle into `dist/index.js`
+- Lint + format: `bun run lint` (Biome — single tool replaces ESLint + Prettier)
 - Tests: `bun run test` (jest, specs in `spec/`)
 - Generate demo themes locally: set `GITHUB_TOKEN` env, then `bun run dev USERNAME`
 
@@ -22,7 +23,7 @@ Source repo: `xarthurx/github-3d-profile`. Used by the profile repo `xarthurx/xa
 - `src/create-css-colors.ts` — Generates CSS classes from theme settings
 - `src/type.ts` — All TypeScript interfaces (settings, user info, etc.)
 - `src/aggregate-user-info.ts` — Transforms GitHub GraphQL response into UserInfo
-- `src/settings/` — Built-in theme JSON presets (Normal, Season, Night, etc.)
+- `src/settings/` — Built-in theme JSON presets (Solarized light + dark)
 
 ## Custom Themes
 

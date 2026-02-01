@@ -1,8 +1,7 @@
 /** Default color for languages without a defined color, and for the "other" category. */
 export const OTHER_COLOR = '#444444';
 
-export const toIsoDate = (date: Date): string =>
-    date.toISOString().substring(0, 10);
+export const toIsoDate = (date: Date): string => date.toISOString().substring(0, 10);
 
 export const inertThousandSeparator = (value: number): string => {
     if (value <= 9999) {
@@ -22,7 +21,7 @@ export const toScale = (value: number): string => {
         return value.toFixed(0);
     } else if (value <= 999999) {
         // 10K - 999K
-        return Math.floor(value / 1_000).toFixed(0) + 'K';
+        return `${Math.floor(value / 1_000).toFixed(0)}K`;
     } else {
         return '1M+';
     }

@@ -1,5 +1,5 @@
-import { mkdirSync, writeFileSync } from 'fs';
-import { dirname } from 'path';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 
 export const OUTPUT_FOLDER = process.env.OUTPUT_DIR || './profile-3d-contrib';
 

@@ -1,11 +1,11 @@
 import * as d3 from 'd3';
 import { JSDOM } from 'jsdom';
 import * as contrib from './create-3d-contrib';
+import * as colors from './create-css-colors';
 import * as pie from './create-pie-language';
 import * as radar from './create-radar-contrib';
-import * as colors from './create-css-colors';
+import type * as type from './type';
 import * as util from './utils';
-import * as type from './type';
 
 /** Full SVG canvas dimensions */
 const SVG_WIDTH = 1280;
@@ -76,7 +76,8 @@ export const createSvg = (
         const isLight = (bgColor.r * 299 + bgColor.g * 587 + bgColor.b * 114) / 1000 > 128;
         const bottomColor = isLight ? bgColor.darker(0.06) : bgColor.brighter(0.08);
         const defs = svg.append('defs');
-        const grad = defs.append('linearGradient')
+        const grad = defs
+            .append('linearGradient')
             .attr('id', 'bg-gradient')
             .attr('x1', '0')
             .attr('y1', '0')
@@ -200,9 +201,7 @@ export const createSvg = (
             .text(util.inertThousandSeparator(userInfo.totalContributions))
             .attr('class', 'fill-strong');
 
-        const contribLabel = settings.l10n
-            ? settings.l10n.contrib
-            : 'contributions';
+        const contribLabel = settings.l10n ? settings.l10n.contrib : 'contributions';
         group
             .append('text')
             .style('font-size', STATS_FONT_SIZE_LABEL)
@@ -217,9 +216,7 @@ export const createSvg = (
             .append('g')
             .attr(
                 'transform',
-                `translate(${STATS_STAR_X - 24}, ${
-                    positionYContrib - 21
-                }), scale(1.5)`,
+                `translate(${STATS_STAR_X - 24}, ${positionYContrib - 21}), scale(1.5)`,
             )
             .style('opacity', '0.9')
             .append('path')
@@ -247,9 +244,7 @@ export const createSvg = (
             .append('g')
             .attr(
                 'transform',
-                `translate(${STATS_FORK_X - 24}, ${
-                    positionYContrib - 21
-                }), scale(1.5)`,
+                `translate(${STATS_FORK_X - 24}, ${positionYContrib - 21}), scale(1.5)`,
             )
             .style('opacity', '0.9')
             .append('path')
@@ -275,12 +270,8 @@ export const createSvg = (
         // ISO 8601 format
         const startDate = userInfo.contributionCalendar[0].date;
         const endDate =
-            userInfo.contributionCalendar[
-                userInfo.contributionCalendar.length - 1
-            ].date;
-        const period = `${util.toIsoDate(startDate)} / ${util.toIsoDate(
-            endDate,
-        )}`;
+            userInfo.contributionCalendar[userInfo.contributionCalendar.length - 1].date;
+        const period = `${util.toIsoDate(startDate)} / ${util.toIsoDate(endDate)}`;
 
         group
             .append('text')

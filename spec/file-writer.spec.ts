@@ -1,5 +1,5 @@
-import { writeFile, OUTPUT_FOLDER } from "../src/file-writer";
-import { rmSync, readFileSync } from 'fs';
+import { readFileSync, rmSync } from 'node:fs';
+import { OUTPUT_FOLDER, writeFile } from '../src/file-writer';
 
 afterEach(() => {
     rmSync(OUTPUT_FOLDER, { recursive: true, force: true });

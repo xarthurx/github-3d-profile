@@ -1,6 +1,6 @@
-import * as d3 from 'd3';
+import type * as d3 from 'd3';
+import type * as type from './type';
 import * as util from './utils';
-import * as type from './type';
 
 const rangeLabels: ReadonlyArray<string> = ['1', '10', '100', '1K', '10K'];
 const levels = rangeLabels.length;
@@ -60,20 +60,13 @@ export const createRadarContrib = (
     ];
     const total = data.length;
     const posX = (level: number, num: number) =>
-        util.toFixed(
-            radius * (level / levels) * Math.sin((num / total) * radians),
-        );
+        util.toFixed(radius * (level / levels) * Math.sin((num / total) * radians));
     const posY = (level: number, num: number) =>
-        util.toFixed(
-            radius * (level / levels) * -Math.cos((num / total) * radians),
-        );
+        util.toFixed(radius * (level / levels) * -Math.cos((num / total) * radians));
 
     const group = svg
         .append('g')
-        .attr(
-            'transform',
-            `translate(${util.toFixed(x + cx)}, ${util.toFixed(y + cy)})`,
-        );
+        .attr('transform', `translate(${util.toFixed(x + cx)}, ${util.toFixed(y + cy)})`);
 
     for (let j = 0; j < levels; j++) {
         group
@@ -81,10 +74,10 @@ export const createRadarContrib = (
             .data(data)
             .enter()
             .append('line')
-            .attr('x1', (d, i) => posX(j + 1, i))
-            .attr('y1', (d, i) => posY(j + 1, i))
-            .attr('x2', (d, i) => posX(j + 1, i + 1))
-            .attr('y2', (d, i) => posY(j + 1, i + 1))
+            .attr('x1', (_d, i) => posX(j + 1, i))
+            .attr('y1', (_d, i) => posY(j + 1, i))
+            .attr('x2', (_d, i) => posX(j + 1, i + 1))
+            .attr('y2', (_d, i) => posY(j + 1, i + 1))
             .attr('class', 'stroke-weak')
             .style('stroke-dasharray', '4 4')
             .style('stroke-width', '1px');
@@ -100,21 +93,16 @@ export const createRadarContrib = (
         .attr('text-anchor', 'start')
         .attr('dominant-baseline', 'auto')
         .attr('x', util.toFixed(radius / 50))
-        .attr('y', (d, i) => util.toFixed(-radius * ((i + 1) / levels)))
+        .attr('y', (_d, i) => util.toFixed(-radius * ((i + 1) / levels)))
         .attr('class', 'fill-weak');
 
-    const axis = group
-        .selectAll(null)
-        .data(data)
-        .enter()
-        .append('g')
-        .attr('class', 'axis');
+    const axis = group.selectAll(null).data(data).enter().append('g').attr('class', 'axis');
 
     axis.append('line')
-        .attr('x1', (d, i) => posX(1, i))
-        .attr('y1', (d, i) => posY(1, i))
-        .attr('x2', (d, i) => posX(levels, i))
-        .attr('y2', (d, i) => posY(levels, i))
+        .attr('x1', (_d, i) => posX(1, i))
+        .attr('y1', (_d, i) => posY(1, i))
+        .attr('x2', (_d, i) => posX(levels, i))
+        .attr('y2', (_d, i) => posY(levels, i))
         .attr('class', 'stroke-weak')
         .style('stroke-dasharray', '4 4')
         .style('stroke-width', '1px');
@@ -124,8 +112,8 @@ export const createRadarContrib = (
         .style('font-size', `${util.toFixed(radius / 7.5)}px`)
         .attr('text-anchor', 'middle')
         .attr('dominant-baseline', 'middle')
-        .attr('x', (d, i) => posX(1.25 * levels, i))
-        .attr('y', (d, i) => posY(1.17 * levels, i))
+        .attr('x', (_d, i) => posX(1.25 * levels, i))
+        .attr('y', (_d, i) => posY(1.17 * levels, i))
         .attr('class', 'fill-fg')
         .append('title')
         .text((d) => d.value);
@@ -135,15 +123,10 @@ export const createRadarContrib = (
         .map((level, i) => `${posX(level, i)},${posY(level, i)}`)
         .join(' ');
 
-    const radar = group
-        .append('polygon')
-        .attr('class', 'radar')
-        .attr('points', points);
+    const radar = group.append('polygon').attr('class', 'radar').attr('points', points);
     if (isAnimate) {
         const level0 = toLevel(0);
-        const points0 = data
-            .map((d, i) => `${posX(level0, i)},${posY(level0, i)}`)
-            .join(' ');
+        const points0 = data.map((_d, i) => `${posX(level0, i)},${posY(level0, i)}`).join(' ');
         radar
             .append('animate')
             .attr('attributeName', 'points')

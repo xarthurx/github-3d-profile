@@ -160,7 +160,6 @@ export interface PieLangOnlySettings extends PieLangSettings {
     type: 'pie_lang_only';
 
     darkMode?: PieLangOnlySettings;
-
 }
 
 export interface RadarContribOnlySettings extends RadarContribSettings {
@@ -175,9 +174,6 @@ export type FullSettings =
     | RainbowColorSettings
     | BitmapPatternSettings;
 
-export type Settings =
-    | FullSettings
-    | PieLangOnlySettings
-    | RadarContribOnlySettings;
+export type Settings = FullSettings | PieLangOnlySettings | RadarContribOnlySettings;
 
 export type SettingFile = Settings | Settings[];

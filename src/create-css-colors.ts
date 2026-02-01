@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import * as type from './type';
+import type * as type from './type';
 
 const DARKER_RIGHT = 1;
 const DARKER_LEFT = 0.5;
@@ -54,54 +54,31 @@ const createColors = (settings: type.Settings): string => {
 
     if (settings.type === 'season') {
         let n = 0;
-        const interpolator1 = d3.interpolate(
-            settings.contribColors1,
-            settings.contribColors2,
-        );
-        const interpolator2 = d3.interpolate(
-            settings.contribColors2,
-            settings.contribColors3,
-        );
-        const interpolator3 = d3.interpolate(
-            settings.contribColors3,
-            settings.contribColors4,
-        );
-        const interpolator4 = d3.interpolate(
-            settings.contribColors4,
-            settings.contribColors1,
-        );
-        [interpolator2, interpolator3, interpolator4, interpolator1].forEach(
-            (interpolator) => {
-                [
-                    interpolator(0.2),
-                    interpolator(0.4),
-                    interpolator(0.6),
-                    interpolator(0.8),
-                    interpolator(1),
-                ].forEach((colors) => {
-                    colors.forEach((color, i) => {
-                        const topColor = d3
-                            .rgb(color)
-                            .darker(DARKER_TOP)
-                            .toString();
-                        const leftColor = d3
-                            .rgb(color)
-                            .darker(DARKER_LEFT)
-                            .toString();
-                        const rightColor = d3
-                            .rgb(color)
-                            .darker(DARKER_RIGHT)
-                            .toString();
-                        cssColors.push(
-                            `.cont-top-p${n}-${i} { fill: ${topColor}; }`,
-                            `.cont-left-p${n}-${i} { fill: ${leftColor}; }`,
-                            `.cont-right-p${n}-${i} { fill: ${rightColor}; }`,
-                        );
-                    });
-                    n++;
+        const interpolator1 = d3.interpolate(settings.contribColors1, settings.contribColors2);
+        const interpolator2 = d3.interpolate(settings.contribColors2, settings.contribColors3);
+        const interpolator3 = d3.interpolate(settings.contribColors3, settings.contribColors4);
+        const interpolator4 = d3.interpolate(settings.contribColors4, settings.contribColors1);
+        [interpolator2, interpolator3, interpolator4, interpolator1].forEach((interpolator) => {
+            [
+                interpolator(0.2),
+                interpolator(0.4),
+                interpolator(0.6),
+                interpolator(0.8),
+                interpolator(1),
+            ].forEach((colors) => {
+                colors.forEach((color, i) => {
+                    const topColor = d3.rgb(color).darker(DARKER_TOP).toString();
+                    const leftColor = d3.rgb(color).darker(DARKER_LEFT).toString();
+                    const rightColor = d3.rgb(color).darker(DARKER_RIGHT).toString();
+                    cssColors.push(
+                        `.cont-top-p${n}-${i} { fill: ${topColor}; }`,
+                        `.cont-left-p${n}-${i} { fill: ${leftColor}; }`,
+                        `.cont-right-p${n}-${i} { fill: ${rightColor}; }`,
+                    );
                 });
-            },
-        );
+                n++;
+            });
+        });
     }
 
     if (settings.type === 'bitmap') {

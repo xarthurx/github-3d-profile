@@ -3,8 +3,8 @@ import * as aggregate from './aggregate-user-info';
 import * as template from './color-template';
 import * as create from './create-svg';
 import * as f from './file-writer';
-import * as r from './settings-reader';
 import * as client from './github-graphql';
+import * as r from './settings-reader';
 
 export const main = async (): Promise<void> => {
     try {
@@ -13,15 +13,12 @@ export const main = async (): Promise<void> => {
             core.setFailed('GITHUB_TOKEN is empty');
             return;
         }
-        const userName =
-            3 <= process.argv.length ? process.argv[2] : process.env.USERNAME;
+        const userName = 3 <= process.argv.length ? process.argv[2] : process.env.USERNAME;
         if (!userName) {
             core.setFailed('USERNAME is empty');
             return;
         }
-        const maxRepos = process.env.MAX_REPOS
-            ? Number(process.env.MAX_REPOS)
-            : 100;
+        const maxRepos = process.env.MAX_REPOS ? Number(process.env.MAX_REPOS) : 100;
         if (Number.isNaN(maxRepos)) {
             core.setFailed('MAX_REPOS is NaN');
             return;
@@ -32,25 +29,15 @@ export const main = async (): Promise<void> => {
             return;
         }
 
-        const response = await client.fetchData(
-            token,
-            userName,
-            maxRepos,
-            year,
-        );
+        const response = await client.fetchData(token, userName, maxRepos, year);
         const userInfo = aggregate.aggregateUserInfo(response);
 
         if (process.env.SETTING_JSON) {
             const settingFile = r.readSettingJson(process.env.SETTING_JSON);
-            const settingInfos =
-                'length' in settingFile ? settingFile : [settingFile];
+            const settingInfos = 'length' in settingFile ? settingFile : [settingFile];
             for (const settingInfo of settingInfos) {
-                const fileName =
-                    settingInfo.fileName || 'profile-customize.svg';
-                f.writeFile(
-                    fileName,
-                    create.createSvg(userInfo, settingInfo, false),
-                );
+                const fileName = settingInfo.fileName || 'profile-customize.svg';
+                f.writeFile(fileName, create.createSvg(userInfo, settingInfo, false));
             }
         } else {
             f.writeFile(

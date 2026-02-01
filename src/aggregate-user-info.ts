@@ -1,5 +1,5 @@
-import * as client from './github-graphql';
-import * as type from './type';
+import type * as client from './github-graphql';
+import type * as type from './type';
 import { OTHER_COLOR } from './utils';
 
 const toNumberContributionLevel = (level: type.ContributionLevel): number => {
@@ -27,14 +27,12 @@ const compare = (num1: number, num2: number): number => {
     }
 };
 
-export const aggregateUserInfo = (
-    response: client.ResponseType,
-): type.UserInfo => {
+export const aggregateUserInfo = (response: client.ResponseType): type.UserInfo => {
     if (!response.data) {
-        if (response.errors && response.errors.length) {
+        if (response.errors?.length) {
             throw new Error(response.errors[0].message);
         } else {
-            throw new Error('JSON\n' + JSON.stringify(response, null, 2));
+            throw new Error(`JSON\n${JSON.stringify(response, null, 2)}`);
         }
     }
 
@@ -43,9 +41,7 @@ export const aggregateUserInfo = (
         .flatMap((week) => week.contributionDays)
         .map((week) => ({
             contributionCount: week.contributionCount,
-            contributionLevel: toNumberContributionLevel(
-                week.contributionLevel,
-            ),
+            contributionLevel: toNumberContributionLevel(week.contributionLevel),
             date: new Date(week.date),
         }));
     const contributesLanguage: { [language: string]: type.LangInfo } = {};
@@ -67,9 +63,9 @@ export const aggregateUserInfo = (
                 };
             }
         });
-    const languages: Array<type.LangInfo> = Object.values(
-        contributesLanguage,
-    ).sort((obj1, obj2) => -compare(obj1.contributions, obj2.contributions));
+    const languages: Array<type.LangInfo> = Object.values(contributesLanguage).sort(
+        (obj1, obj2) => -compare(obj1.contributions, obj2.contributions),
+    );
 
     const totalForkCount = user.repositories.nodes
         .map((node) => node.forkCount)
@@ -78,23 +74,16 @@ export const aggregateUserInfo = (
         .map((node) => node.stargazerCount)
         .reduce((num1, num2) => num1 + num2, 0);
     const userInfo: type.UserInfo = {
-        isHalloween:
-            user.contributionsCollection.contributionCalendar.isHalloween,
+        isHalloween: user.contributionsCollection.contributionCalendar.isHalloween,
         contributionCalendar: calendar,
         contributesLanguage: languages,
-        totalContributions:
-            user.contributionsCollection.contributionCalendar
-                .totalContributions,
-        totalCommitContributions:
-            user.contributionsCollection.totalCommitContributions,
-        totalIssueContributions:
-            user.contributionsCollection.totalIssueContributions,
-        totalPullRequestContributions:
-            user.contributionsCollection.totalPullRequestContributions,
+        totalContributions: user.contributionsCollection.contributionCalendar.totalContributions,
+        totalCommitContributions: user.contributionsCollection.totalCommitContributions,
+        totalIssueContributions: user.contributionsCollection.totalIssueContributions,
+        totalPullRequestContributions: user.contributionsCollection.totalPullRequestContributions,
         totalPullRequestReviewContributions:
             user.contributionsCollection.totalPullRequestReviewContributions,
-        totalRepositoryContributions:
-            user.contributionsCollection.totalRepositoryContributions,
+        totalRepositoryContributions: user.contributionsCollection.totalRepositoryContributions,
         totalForkCount: totalForkCount,
         totalStargazerCount: totalStargazerCount,
     };

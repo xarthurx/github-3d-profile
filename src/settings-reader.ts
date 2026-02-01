@@ -1,5 +1,5 @@
-import { readFileSync } from 'fs';
-import * as type from './type';
+import { readFileSync } from 'node:fs';
+import type * as type from './type';
 
 export const readSettingJson = (filePath: string): type.SettingFile => {
     const content = readFileSync(filePath, {

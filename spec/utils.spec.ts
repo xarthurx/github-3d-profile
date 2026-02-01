@@ -1,4 +1,4 @@
-import * as util from "../src/utils";
+import * as util from '../src/utils';
 
 describe('utils', () => {
     it('toIsoDate', () => {
@@ -34,6 +34,4 @@ describe('utils', () => {
         expect(util.toScale(999_999_999)).toEqual('1M+');
         expect(util.toScale(1_000_000_000)).toEqual('1M+');
     });
-
 });
-

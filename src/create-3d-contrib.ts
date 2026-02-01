@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
+import type * as type from './type';
 import * as util from './utils';
-import * as type from './type';
 
 const ANGLE = 30;
 const DARKER_RIGHT = 1;
@@ -25,8 +25,7 @@ const HEIGHT_BASE = 3;
 /** Number of horizontal slots (weeks display width) */
 const WEEK_SLOTS = 64;
 
-const toEpochDays = (date: Date): number =>
-    Math.floor(date.getTime() / (24 * 60 * 60 * 1000));
+const toEpochDays = (date: Date): number => Math.floor(date.getTime() / (24 * 60 * 60 * 1000));
 
 type PanelType = 'top' | 'left' | 'right';
 
@@ -81,8 +80,6 @@ const decideSeasonPatternNo = (date: Date): number => {
         case 6:
             // spring -> summer = 15-19
             return 15 + diff;
-        case 7:
-        case 8:
         default:
             // summer = 19
             return 19;
@@ -184,10 +181,7 @@ const addPatternForBitmap = (
         .attr('class', `cont-${panel}-bg-${contributionLevel}`);
     const path = d3.path();
     for (const [y, bitmapValue] of panelPattern.bitmap.entries()) {
-        const bitmap =
-            typeof bitmapValue === 'string'
-                ? parseInt(bitmapValue, 16)
-                : bitmapValue;
+        const bitmap = typeof bitmapValue === 'string' ? parseInt(bitmapValue, 16) : bitmapValue;
         for (let x = 0; x < width; x++) {
             if ((bitmap & (1 << (width - x - 1))) !== 0) {
                 path.rect(x, y, 1, 1);
@@ -218,8 +212,8 @@ export const addDefines = (
 export const create3DContrib = (
     svg: d3.Selection<SVGSVGElement, unknown, null, unknown>,
     userInfo: type.UserInfo,
-    x: number,
-    y: number,
+    _x: number,
+    _y: number,
     width: number,
     height: number,
     settings: type.FullSettings,
@@ -245,14 +239,13 @@ export const create3DContrib = (
     const group = svg.append('g');
 
     userInfo.contributionCalendar.forEach((cal) => {
-        const week = Math.floor(
-            (toEpochDays(cal.date) - sundayOfFirstWeek) / 7,
-        );
+        const week = Math.floor((toEpochDays(cal.date) - sundayOfFirstWeek) / 7);
         const dayOfWeek = cal.date.getUTCDay(); // sun = 0, mon = 1, ...
 
         const baseX = offsetX + (week - dayOfWeek) * dx;
         const baseY = offsetY + (week + dayOfWeek) * dy;
-        const calHeight = Math.log10(cal.contributionCount / HEIGHT_DIVISOR + 1) * HEIGHT_SCALE + HEIGHT_BASE;
+        const calHeight =
+            Math.log10(cal.contributionCount / HEIGHT_DIVISOR + 1) * HEIGHT_SCALE + HEIGHT_BASE;
         const contribLevel = cal.contributionLevel;
 
         const isAnimate = settings.growingAnimation || isForcedAnimation;
@@ -261,9 +254,7 @@ export const create3DContrib = (
             .append('g')
             .attr(
                 'transform',
-                `translate(${util.toFixed(baseX)} ${util.toFixed(
-                    baseY - calHeight,
-                )})`,
+                `translate(${util.toFixed(baseX)} ${util.toFixed(baseY - calHeight)})`,
             );
         if (isAnimate && contribLevel !== 0) {
             bar.append('animateTransform')
@@ -273,9 +264,7 @@ export const create3DContrib = (
                     'values',
                     `${util.toFixed(baseX)} ${util.toFixed(
                         baseY - HEIGHT_BASE,
-                    )};${util.toFixed(baseX)} ${util.toFixed(
-                        baseY - calHeight,
-                    )}`,
+                    )};${util.toFixed(baseX)} ${util.toFixed(baseY - calHeight)}`,
                 )
                 .attr('dur', GROW_DURATION)
                 .attr('repeatCount', '1');
@@ -314,9 +303,7 @@ export const create3DContrib = (
                 'transform',
                 `skewY(${-ANGLE}) skewX(${util.toFixed(
                     atan(dxx / 2 / dyy),
-                )}) scale(${util.toFixed(dxx / widthTop)} ${util.toFixed(
-                    (2 * dyy) / widthTop,
-                )})`,
+                )}) scale(${util.toFixed(dxx / widthTop)} ${util.toFixed((2 * dyy) / widthTop)})`,
             );
 
         applyPanelColor(topPanel, contribLevel, 'top', settings, cal.date, week);
@@ -356,10 +343,7 @@ export const create3DContrib = (
 
         const widthRight =
             settings.type === 'bitmap'
-                ? Math.max(
-                      1,
-                      settings.contribPatterns[contribLevel].right.width,
-                  )
+                ? Math.max(1, settings.contribPatterns[contribLevel].right.width)
                 : dxx;
         const scaleRight = Math.sqrt(dxx ** 2 + dyy ** 2) / widthRight;
         const heightRight = calHeight / scaleRight;
@@ -386,9 +370,7 @@ export const create3DContrib = (
                 .attr('attributeName', 'height')
                 .attr(
                     'values',
-                    `${util.toFixed(HEIGHT_BASE / scaleRight)};${util.toFixed(
-                        heightRight,
-                    )}`,
+                    `${util.toFixed(HEIGHT_BASE / scaleRight)};${util.toFixed(heightRight)}`,
                 )
                 .attr('dur', GROW_DURATION)
                 .attr('repeatCount', '1');
