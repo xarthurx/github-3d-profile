@@ -32,7 +32,7 @@ export const createRadarContrib = (
 
     const commitLabel = settings.l10n ? settings.l10n.commit : 'Commit';
     const issueLabel = settings.l10n ? settings.l10n.issue : 'Issue';
-    const pullReqLabel = settings.l10n ? settings.l10n.pullreq : 'PullReq';
+    const pullReqLabel = settings.l10n ? settings.l10n.pullreq : 'PR';
     const reviewLabel = settings.l10n ? settings.l10n.review : 'Review';
     const repoLabel = settings.l10n ? settings.l10n.repo : 'Repo';
 
