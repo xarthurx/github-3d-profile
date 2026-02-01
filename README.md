@@ -9,7 +9,7 @@
 
 > **Fork of [yoshi389111/github-profile-3d-contrib](https://github.com/yoshi389111/github-profile-3d-contrib)** (branched from v0.9.1).
 > This fork adds custom themes (Nord, Solarized, Gruvbox, Rose Pine, Graphite), wave animation on 3D blocks, pie chart breathing effects, themed pie colors, gradient backgrounds, and a redesigned stats bar.
-> See [CHANGE_LOG.md](./CHANGE_LOG.md) for the full list of changes.
+> See [CHANGE_LOG.md](./docs/CHANGE_LOG.md) for the full list of changes.
 
 This GitHub Action creates a GitHub contribution calendar on a 3D profile image.
 
@@ -206,7 +206,7 @@ All themes include animated 3D blocks with wave effect, breathing pie chart, and
 
 ## How to use (GitHub Actions) - Advanced examples
 
-- [More info in EXAMPLES.md](./EXAMPLES.md)
+- [More info in EXAMPLES.md](./docs/EXAMPLES.md)
 
 ## How to use (local)
 
