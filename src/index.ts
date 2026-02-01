@@ -53,57 +53,13 @@ export const main = async (): Promise<void> => {
                 );
             }
         } else {
-            const settings = userInfo.isHalloween
-                ? template.HalloweenSettings
-                : template.NormalSettings;
-
             f.writeFile(
-                'profile-green-animate.svg',
-                create.createSvg(userInfo, settings, true),
+                'profile-solarized-light.svg',
+                create.createSvg(userInfo, template.SolarizedLightSettings, true),
             );
             f.writeFile(
-                'profile-green.svg',
-                create.createSvg(userInfo, settings, false),
-            );
-
-            // Northern hemisphere
-            f.writeFile(
-                'profile-season-animate.svg',
-                create.createSvg(userInfo, template.NorthSeasonSettings, true),
-            );
-            f.writeFile(
-                'profile-season.svg',
-                create.createSvg(userInfo, template.NorthSeasonSettings, false),
-            );
-
-            // Southern hemisphere
-            f.writeFile(
-                'profile-south-season-animate.svg',
-                create.createSvg(userInfo, template.SouthSeasonSettings, true),
-            );
-            f.writeFile(
-                'profile-south-season.svg',
-                create.createSvg(userInfo, template.SouthSeasonSettings, false),
-            );
-
-            f.writeFile(
-                'profile-night-view.svg',
-                create.createSvg(userInfo, template.NightViewSettings, true),
-            );
-
-            f.writeFile(
-                'profile-night-green.svg',
-                create.createSvg(userInfo, template.NightGreenSettings, true),
-            );
-
-            f.writeFile(
-                'profile-night-rainbow.svg',
-                create.createSvg(userInfo, template.NightRainbowSettings, true),
-            );
-
-            f.writeFile(
-                'profile-gitblock.svg',
-                create.createSvg(userInfo, template.GitBlockSettings, true),
+                'profile-solarized-dark.svg',
+                create.createSvg(userInfo, template.SolarizedDarkSettings, true),
             );
         }
     } catch (error) {

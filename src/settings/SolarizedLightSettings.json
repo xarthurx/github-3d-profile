@@ -1,0 +1,12 @@
+{
+    "type": "normal",
+    "fileName": "profile-solarized-light.svg",
+    "backgroundColor": "#fdf6e3",
+    "foregroundColor": "#657b83",
+    "strongColor": "#586e75",
+    "weakColor": "#93a1a1",
+    "radarColor": "#268bd2",
+    "growingAnimation": true,
+    "contribColors": ["#eee8d5", "#e2d7c0", "#cdbb95", "#2aa198", "#268bd2"],
+    "pieColors": ["#268bd2", "#2aa198", "#859900", "#b58900", "#d33682", "#6c71c4"]
+}

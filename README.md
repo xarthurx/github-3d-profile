@@ -136,16 +136,8 @@ The first time, run this workflow manually.
 
 By default (without `SETTING_JSON`), the following profile images are generated:
 
-- `profile-3d-contrib/profile-green-animate.svg`
-- `profile-3d-contrib/profile-green.svg`
-- `profile-3d-contrib/profile-season-animate.svg`
-- `profile-3d-contrib/profile-season.svg`
-- `profile-3d-contrib/profile-south-season-animate.svg`
-- `profile-3d-contrib/profile-south-season.svg`
-- `profile-3d-contrib/profile-night-view.svg`
-- `profile-3d-contrib/profile-night-green.svg`
-- `profile-3d-contrib/profile-night-rainbow.svg`
-- `profile-3d-contrib/profile-gitblock.svg`
+- `profile-3d-contrib/profile-solarized-light.svg`
+- `profile-3d-contrib/profile-solarized-dark.svg`
 
 When using `SETTING_JSON` with the custom themes (see below), the output files are named according to the `fileName` property in your JSON config. For example, with `sample-settings/theme-preview.json`:
 
