@@ -187,9 +187,23 @@ export const fetchData = async (
     year: number | null = null,
 ): Promise<ResponseType> => {
     const res1 = await fetchFirst(token, userName, year);
-    const result = res1.data;
 
-    if (result && result.user.repositories.nodes.length === maxReposOneQuery) {
+    if (res1.errors) {
+        const msg = res1.errors.map((e) => e.message).join('; ');
+        throw new Error(`GitHub GraphQL error: ${msg}`);
+    }
+
+    const result = res1.data;
+    if (!result) {
+        throw new Error('GitHub GraphQL returned no data. Check that GITHUB_TOKEN is valid.');
+    }
+    if (!result.user) {
+        throw new Error(
+            `GitHub user "${userName}" not found. Check that USERNAME is correct and the token has sufficient permissions.`,
+        );
+    }
+
+    if (result.user.repositories.nodes.length === maxReposOneQuery) {
         const repos1 = result.user.repositories;
         let cursor = repos1.edges[repos1.edges.length - 1].cursor;
         while (repos1.nodes.length < maxRepos) {

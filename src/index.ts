@@ -50,8 +50,9 @@ export const main = async (): Promise<void> => {
             );
         }
     } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
         console.error(error);
-        core.setFailed('error');
+        core.setFailed(message);
     }
 };
 
