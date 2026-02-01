@@ -123,13 +123,13 @@ export const createSvg = (
 
         const group = svg.append('g');
 
-        // Stats bar: left-aligned below pie chart
+        // Stats bar: left-aligned below pie chart (compact)
         const positionXContrib = 50;
-        const positionYContrib = height - 40;
+        const positionYContrib = height - 30;
 
         group
             .append('text')
-            .style('font-size', '32px')
+            .style('font-size', '22px')
             .style('font-weight', 'bold')
             .attr('x', positionXContrib)
             .attr('y', positionYContrib)
@@ -142,14 +142,14 @@ export const createSvg = (
             : 'contributions';
         group
             .append('text')
-            .style('font-size', '24px')
-            .attr('x', positionXContrib + 80)
+            .style('font-size', '16px')
+            .attr('x', positionXContrib + 60)
             .attr('y', positionYContrib)
             .attr('text-anchor', 'start')
             .text(contribLabel)
             .attr('class', 'fill-fg');
 
-        const positionXStar = 330;
+        const positionXStar = 260;
         const positionYStar = positionYContrib;
 
         // icon of star
@@ -157,9 +157,9 @@ export const createSvg = (
             .append('g')
             .attr(
                 'transform',
-                `translate(${positionXStar - 32}, ${
-                    positionYStar - 28
-                }), scale(2)`,
+                `translate(${positionXStar - 24}, ${
+                    positionYStar - 21
+                }), scale(1.5)`,
             )
             .append('path')
             .attr('fill-rule', 'evenodd')
@@ -171,9 +171,9 @@ export const createSvg = (
 
         group
             .append('text')
-            .style('font-size', '32px')
+            .style('font-size', '22px')
             .style('font-weight', 'bold')
-            .attr('x', positionXStar + 10)
+            .attr('x', positionXStar + 6)
             .attr('y', positionYStar)
             .attr('text-anchor', 'start')
             .text(util.toScale(userInfo.totalStargazerCount))
@@ -181,7 +181,7 @@ export const createSvg = (
             .append('title')
             .text(userInfo.totalStargazerCount);
 
-        const positionXFork = 470;
+        const positionXFork = 370;
         const positionYFork = positionYContrib;
 
         // icon of fork
@@ -189,9 +189,9 @@ export const createSvg = (
             .append('g')
             .attr(
                 'transform',
-                `translate(${positionXFork - 32}, ${
-                    positionYFork - 28
-                }), scale(2)`,
+                `translate(${positionXFork - 24}, ${
+                    positionYFork - 21
+                }), scale(1.5)`,
             )
             .append('path')
             .attr('fill-rule', 'evenodd')
@@ -203,7 +203,7 @@ export const createSvg = (
 
         group
             .append('text')
-            .style('font-size', '32px')
+            .style('font-size', '22px')
             .style('font-weight', 'bold')
             .attr('x', positionXFork + 4)
             .attr('y', positionYFork)
